@@ -56,10 +56,10 @@ async function startServer() {
         let template = fs.readFileSync(path.resolve(__dirname, "index.html"), "utf-8");
         template = await vite.transformIndexHtml(url, template);
         
-        const settings = await getSiteSettings();
-        const siteTitle = settings?.ogTitle || settings?.siteName || "Sohanur Construction & Manpower Solution";
-        const siteDesc = settings?.ogDescription || "Need Construction Workers? অথবা কাজ খুঁজছেন? আমরা সরবরাহ করি দক্ষ Rod Mistry, Raj Mistry, Helper, Welder & Fitter। আজই যোগাযোগ করুন।";
-        const siteImage = settings?.ogImage || "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=2070&auto=format&fit=crop";
+        // Hardcoded SEO metadata as requested
+        const siteTitle = "Sohanur Construction & Manpower Solution";
+        const siteDesc = "Need Construction Workers? অথবা কাজ খুঁজছেন? আমরা সরবরাহ করি দক্ষ Rod Mistry, Raj Mistry, Helper, Welder & Fitter। আজই যোগাযোগ করুন।";
+        const siteImage = "https://ais-dev-mb75bjrzfp5xjlpnzkjjg7-766197828128.asia-southeast1.run.app/logo.png";
         const siteUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
 
         const ogTags = `
@@ -91,11 +91,11 @@ async function startServer() {
     app.get("*", async (req, res) => {
       try {
         let template = fs.readFileSync(path.join(distPath, "index.html"), "utf-8");
-        const settings = await getSiteSettings();
         
-        const siteTitle = settings?.ogTitle || settings?.siteName || "Sohanur Construction & Manpower Solution";
-        const siteDesc = settings?.ogDescription || "Need Construction Workers? অথবা কাজ খুঁজছেন? আমরা সরবরাহ করি দক্ষ Rod Mistry, Raj Mistry, Helper, Welder & Fitter। আজই যোগাযোগ করুন।";
-        const siteImage = settings?.ogImage || "https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=2070&auto=format&fit=crop";
+        // Hardcoded SEO metadata as requested
+        const siteTitle = "Sohanur Construction & Manpower Solution";
+        const siteDesc = "Need Construction Workers? অথবা কাজ খুঁজছেন? আমরা সরবরাহ করি দক্ষ Rod Mistry, Raj Mistry, Helper, Welder & Fitter। আজই যোগাযোগ করুন।";
+        const siteImage = "https://ais-dev-mb75bjrzfp5xjlpnzkjjg7-766197828128.asia-southeast1.run.app/logo.png";
         const siteUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
 
         const ogTags = `

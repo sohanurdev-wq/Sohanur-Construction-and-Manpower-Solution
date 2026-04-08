@@ -45,6 +45,17 @@
       },
       "required": ["email", "role", "uid"]
     },
+    "agreements": {
+      "title": "Client Agreement",
+      "description": "Photos of signed agreements with clients",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "imageUrl", "createdAt"]
+    },
     "settings": {
       "title": "Site Settings",
       "description": "Global website settings including Open Graph metadata",
@@ -59,6 +70,10 @@
     }
   },
   "firestore": {
+    "/agreements/{agreementId}": {
+      "schema": "agreements",
+      "description": "Collection of client agreements"
+    },
     "/settings/{settingId}": {
       "schema": "settings",
       "description": "Global site settings"

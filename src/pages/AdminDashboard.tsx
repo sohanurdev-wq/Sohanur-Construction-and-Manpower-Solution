@@ -54,6 +54,9 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground">Manage your manpower requests and worker applications.</p>
         </div>
         <div className="flex flex-wrap gap-4">
+          <Button variant="outline" onClick={() => navigate("/admin/agreements")} className="border-gold-500 text-gold-500 hover:bg-gold-500/10">
+            Manage Agreements
+          </Button>
           <Button variant="outline" onClick={() => navigate("/admin/settings")} className="border-gold-500 text-gold-500 hover:bg-gold-500/10">
             Site Settings
           </Button>

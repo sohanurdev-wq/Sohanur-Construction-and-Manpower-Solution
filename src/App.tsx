@@ -22,6 +22,7 @@ import AdminProfile from "./pages/AdminProfile";
 import ManpowerRequests from "./pages/admin/ManpowerRequests";
 import WorkerApplications from "./pages/admin/WorkerApplications";
 import AdminSettings from "./pages/admin/AdminSettings";
+import ManageAgreements from "./pages/admin/ManageAgreements";
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
             <Route path="/admin/requests" element={<ManpowerRequests />} />
             <Route path="/admin/applications" element={<WorkerApplications />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/agreements" element={<ManageAgreements />} />
           </Routes>
         </main>
         <Footer />

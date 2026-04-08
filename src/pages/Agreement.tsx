@@ -1,60 +1,78 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, FileText, AlertCircle, Scale, Image as ImageIcon } from "lucide-react";
+import { ShieldCheck, FileText, AlertCircle, Scale, Image as ImageIcon, Calendar } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 
 export default function Agreement() {
-  const [agreementImage, setAgreementImage] = useState<string | null>(null);
+  const [agreements, setAgreements] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const docRef = doc(db, "settings", "general");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setAgreementImage(docSnap.data().agreementImage || null);
-        }
-      } catch (error) {
-        console.error("Error fetching agreement image:", error);
-      }
-    };
-    fetchSettings();
+    const q = query(collection(db, "agreements"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setAgreements(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
 
   return (
     <div className="container mx-auto px-4 py-24 max-w-5xl">
       <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 gold-text-gradient">Service Agreement</h1>
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 gold-text-gradient">Service Agreements</h1>
         <p className="text-muted-foreground text-lg">
-          Our standard terms and conditions for manpower supply services.
+          Official signed documents and standard terms for our manpower supply services.
         </p>
       </div>
 
-      {agreementImage && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-16"
-        >
-          <Card className="bg-secondary/30 border-gold-500/20 overflow-hidden">
-            <CardHeader className="border-b border-gold-500/10">
-              <CardTitle className="flex items-center gap-2 text-gold-500">
-                <ImageIcon className="h-6 w-6" /> Official Agreement Document
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 md:p-8">
-              <img 
-                src={agreementImage} 
-                alt="Service Agreement" 
-                className="w-full h-auto rounded-lg border border-gold-500/10 shadow-2xl"
-                referrerPolicy="no-referrer"
-              />
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
+      {/* Client Agreements Gallery */}
+      <div className="mb-24">
+        <h2 className="text-2xl font-bold mb-8 flex items-center gap-2">
+          <ImageIcon className="h-6 w-6 text-gold-500" /> Client Agreements
+        </h2>
+        
+        {isLoading ? (
+          <p className="text-muted-foreground">Loading agreements...</p>
+        ) : agreements.length === 0 ? (
+          <p className="text-muted-foreground bg-secondary/20 p-8 rounded-lg border border-gold-500/10 text-center">
+            No client agreements have been uploaded yet.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {agreements.map((agreement) => (
+              <motion.div
+                key={agreement.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <Card className="bg-secondary/30 border-gold-500/20 overflow-hidden hover:border-gold-500/40 transition-all group">
+                  <CardHeader className="border-b border-gold-500/10 bg-black/40">
+                    <CardTitle className="text-lg font-bold text-gold-500 flex items-center justify-between">
+                      {agreement.title}
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1">
+                        <Calendar className="h-3 w-3" /> {agreement.createdAt?.toDate().toLocaleDateString()}
+                      </span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <div className="aspect-[4/5] relative overflow-hidden bg-black">
+                      <img 
+                        src={agreement.imageUrl} 
+                        alt={agreement.title} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Terms */}
