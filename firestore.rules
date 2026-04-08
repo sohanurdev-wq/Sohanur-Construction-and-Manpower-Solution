@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "mdsohank361@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidManpowerRequest(data) {
+      return data.keys().hasAll(['clientName', 'phone', 'workType', 'workerCount', 'status', 'createdAt']) &&
+             data.clientName is string && data.clientName.size() > 0 && data.clientName.size() < 100 &&
+             data.phone is string && data.phone.size() > 0 && data.phone.size() < 20 &&
+             data.workType is string &&
+             data.workerCount is number && data.workerCount > 0 &&
+             data.status in ['pending', 'contacted', 'completed'];
+    }
+
+    function isValidWorkerApplication(data) {
+      return data.keys().hasAll(['name', 'phone', 'workType', 'status', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.phone is string && data.phone.size() > 0 && data.phone.size() < 20 &&
+             data.workType is string &&
+             data.status in ['pending', 'reviewed', 'hired'];
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /manpowerRequests/{requestId} {
+      allow read: if isAdmin();
+      allow create: if isValidManpowerRequest(request.resource.data);
+      allow update: if isAdmin() && isValidManpowerRequest(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /workerApplications/{applicationId} {
+      allow read: if isAdmin();
+      allow create: if isValidWorkerApplication(request.resource.data);
+      allow update: if isAdmin() && isValidWorkerApplication(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+    }
+  }
+}

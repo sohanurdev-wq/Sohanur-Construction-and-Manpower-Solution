@@ -1,0 +1,63 @@
+{
+  "entities": {
+    "manpowerRequests": {
+      "title": "Manpower Request",
+      "description": "Requests from clients for construction manpower",
+      "type": "object",
+      "properties": {
+        "clientName": { "type": "string" },
+        "companyName": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "location": { "type": "string" },
+        "workType": { "type": "string" },
+        "workerCount": { "type": "number" },
+        "description": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "contacted", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientName", "phone", "workType", "workerCount"]
+    },
+    "workerApplications": {
+      "title": "Worker Application",
+      "description": "Applications from workers looking for jobs",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "workType": { "type": "string" },
+        "experience": { "type": "string" },
+        "teamSize": { "type": "number" },
+        "location": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "reviewed", "hired"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone", "workType"]
+    },
+    "users": {
+      "title": "User",
+      "description": "System users (admins)",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin"] },
+        "uid": { "type": "string" }
+      },
+      "required": ["email", "role", "uid"]
+    }
+  },
+  "firestore": {
+    "/manpowerRequests/{requestId}": {
+      "schema": "manpowerRequests",
+      "description": "Collection of manpower requests"
+    },
+    "/workerApplications/{applicationId}": {
+      "schema": "workerApplications",
+      "description": "Collection of worker applications"
+    },
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profiles and roles"
+    }
+  }
+}
