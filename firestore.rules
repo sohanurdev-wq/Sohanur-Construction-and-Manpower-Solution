@@ -66,5 +66,10 @@ service cloud.firestore {
       allow create: if isAdmin();
       allow update: if isAdmin();
     }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
   }
 }

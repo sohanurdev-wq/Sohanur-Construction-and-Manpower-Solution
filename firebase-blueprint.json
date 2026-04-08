@@ -44,9 +44,25 @@
         "uid": { "type": "string" }
       },
       "required": ["email", "role", "uid"]
+    },
+    "settings": {
+      "title": "Site Settings",
+      "description": "Global website settings including Open Graph metadata",
+      "type": "object",
+      "properties": {
+        "ogTitle": { "type": "string" },
+        "ogDescription": { "type": "string" },
+        "ogImage": { "type": "string" },
+        "siteName": { "type": "string" },
+        "agreementImage": { "type": "string" }
+      }
     }
   },
   "firestore": {
+    "/settings/{settingId}": {
+      "schema": "settings",
+      "description": "Global site settings"
+    },
     "/manpowerRequests/{requestId}": {
       "schema": "manpowerRequests",
       "description": "Collection of manpower requests"

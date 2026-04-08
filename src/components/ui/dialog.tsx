@@ -12,7 +12,7 @@ function Dialog({ ...props }: DialogPrimitive.Root.Props) {
 }
 
 function DialogTrigger({ render, ...props }: DialogPrimitive.Trigger.Props) {
-  const isNativeButton = !render || (React.isValidElement(render) && render.type === "button");
+  const isNativeButton = !render || (React.isValidElement(render) && (render.type === "button" || render.type === Button));
   return (
     <DialogPrimitive.Trigger
       data-slot="dialog-trigger"
@@ -28,7 +28,7 @@ function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
 }
 
 function DialogClose({ render, ...props }: DialogPrimitive.Close.Props) {
-  const isNativeButton = !render || (React.isValidElement(render) && render.type === "button");
+  const isNativeButton = !render || (React.isValidElement(render) && (render.type === "button" || render.type === Button));
   return (
     <DialogPrimitive.Close
       data-slot="dialog-close"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { auth, db } from "@/lib/firebase";
+import { auth, db, handleFirestoreError, OperationType } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,12 +46,16 @@ export default function ManpowerRequests() {
     return () => unsubscribe();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this request?")) return;
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
     try {
-      await deleteDoc(doc(db, "manpowerRequests", id));
+      await deleteDoc(doc(db, "manpowerRequests", deleteId));
       toast.success("Request deleted successfully");
+      setDeleteId(null);
     } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `manpowerRequests/${deleteId}`);
       toast.error("Failed to delete request");
     }
   };
@@ -61,6 +65,7 @@ export default function ManpowerRequests() {
       await updateDoc(doc(db, "manpowerRequests", id), { status: newStatus });
       toast.success(`Status updated to ${newStatus}`);
     } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `manpowerRequests/${id}`);
       toast.error("Failed to update status");
     }
   };
@@ -200,9 +205,7 @@ export default function ManpowerRequests() {
                                 )}
                                 <Button 
                                   variant="destructive" 
-                                  onClick={() => {
-                                    handleDelete(req.id);
-                                  }}
+                                  onClick={() => setDeleteId(req.id)}
                                   className="font-bold"
                                 >
                                   <Trash2 className="h-4 w-4 mr-2" /> Delete
@@ -214,7 +217,7 @@ export default function ManpowerRequests() {
                             variant="ghost" 
                             size="icon" 
                             className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
-                            onClick={() => handleDelete(req.id)}
+                            onClick={() => setDeleteId(req.id)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -228,6 +231,29 @@ export default function ManpowerRequests() {
           </div>
         </CardContent>
       </Card>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <DialogContent className="bg-black border-gold-500/20 text-white sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-red-500 flex items-center gap-2">
+              <Trash2 className="h-5 w-5" /> Confirm Deletion
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-6">
+            <p className="text-muted-foreground">
+              Are you sure you want to delete this request? This action cannot be undone.
+            </p>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setDeleteId(null)} className="font-bold">
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} className="font-bold">
+              Delete Permanently
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,8 +1,28 @@
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, FileText, AlertCircle, Scale } from "lucide-react";
+import { ShieldCheck, FileText, AlertCircle, Scale, Image as ImageIcon } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Agreement() {
+  const [agreementImage, setAgreementImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const docRef = doc(db, "settings", "general");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setAgreementImage(docSnap.data().agreementImage || null);
+        }
+      } catch (error) {
+        console.error("Error fetching agreement image:", error);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-24 max-w-5xl">
       <div className="text-center mb-16">
@@ -11,6 +31,30 @@ export default function Agreement() {
           Our standard terms and conditions for manpower supply services.
         </p>
       </div>
+
+      {agreementImage && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-16"
+        >
+          <Card className="bg-secondary/30 border-gold-500/20 overflow-hidden">
+            <CardHeader className="border-b border-gold-500/10">
+              <CardTitle className="flex items-center gap-2 text-gold-500">
+                <ImageIcon className="h-6 w-6" /> Official Agreement Document
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 md:p-8">
+              <img 
+                src={agreementImage} 
+                alt="Service Agreement" 
+                className="w-full h-auto rounded-lg border border-gold-500/10 shadow-2xl"
+                referrerPolicy="no-referrer"
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Terms */}

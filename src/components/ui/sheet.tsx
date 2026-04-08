@@ -10,7 +10,7 @@ function Sheet({ ...props }: SheetPrimitive.Root.Props) {
 }
 
 function SheetTrigger({ render, ...props }: SheetPrimitive.Trigger.Props) {
-  const isNativeButton = !render || (React.isValidElement(render) && render.type === "button");
+  const isNativeButton = !render || (React.isValidElement(render) && (render.type === "button" || render.type === Button));
   return (
     <SheetPrimitive.Trigger
       data-slot="sheet-trigger"
@@ -22,7 +22,7 @@ function SheetTrigger({ render, ...props }: SheetPrimitive.Trigger.Props) {
 }
 
 function SheetClose({ render, ...props }: SheetPrimitive.Close.Props) {
-  const isNativeButton = !render || (React.isValidElement(render) && render.type === "button");
+  const isNativeButton = !render || (React.isValidElement(render) && (render.type === "button" || render.type === Button));
   return (
     <SheetPrimitive.Close
       data-slot="sheet-close"
