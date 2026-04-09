@@ -38,6 +38,25 @@ export default function RequestManpower() {
 
     try {
       await addDoc(collection(db, "manpowerRequests"), data);
+      
+      // Send Telegram Notification
+      const telegramMessage = `🚨 <b>New Manpower Request</b>\n\n` +
+        `🏢 <b>Company:</b> ${data.companyName}\n` +
+        `👤 <b>Contact:</b> ${data.clientName}\n` +
+        `📞 <b>Phone:</b> ${data.phone}\n` +
+        `📍 <b>Location:</b> ${data.location}\n` +
+        `🛠 <b>Work Type:</b> ${data.workType}\n` +
+        `👷 <b>Workers:</b> ${data.workerCount}\n` +
+        `⏳ <b>Duration:</b> ${data.duration}\n` +
+        `🏠 <b>Accommodation:</b> ${data.accommodation ? "Yes" : "No"}\n` +
+        `📝 <b>Details:</b> ${data.description || "N/A"}`;
+
+      fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: telegramMessage }),
+      }).catch(err => console.error("Notification failed:", err));
+
       toast.success("Request submitted successfully! We will contact you soon.");
       e.currentTarget.reset();
       setShowForm(false);

@@ -13,6 +13,42 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  app.use(express.json());
+
+  // API Route for Telegram Notifications
+  app.post("/api/notify", async (req, res) => {
+    const { message } = req.body;
+    const botToken = process.env.TELEGRAM_BOT_TOKEN || "8037861551:AAGCdukJlMoh0LeTuJ8nAasAu_BK4e8S9Vs";
+    const chatId = process.env.TELEGRAM_CHAT_ID || "8329392163";
+
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+
+    try {
+      const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+          parse_mode: "HTML",
+        }),
+      });
+
+      const data = await response.json();
+      if (data.ok) {
+        res.json({ success: true });
+      } else {
+        console.error("Telegram API Error:", data);
+        res.status(500).json({ error: "Failed to send Telegram notification" });
+      }
+    } catch (error) {
+      console.error("Notification Error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Initialize Firebase for server-side use
   const configPath = path.join(__dirname, "firebase-applet-config.json");
   let firebaseApp;

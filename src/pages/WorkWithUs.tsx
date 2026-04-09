@@ -37,6 +37,24 @@ export default function WorkWithUs() {
 
     try {
       await addDoc(collection(db, "workerApplications"), data);
+      
+      // Send Telegram Notification
+      const telegramMessage = `🟢 <b>New Worker Registration</b>\n\n` +
+        `👤 <b>Name:</b> ${data.name}\n` +
+        `📞 <b>Phone:</b> ${data.phone}\n` +
+        `📍 <b>Address:</b> ${data.location}\n` +
+        `🛠 <b>Skill:</b> ${data.workType}\n` +
+        `📅 <b>Experience:</b> ${data.experience} Years\n` +
+        `👥 <b>Team:</b> ${data.teamSize || "No"}\n` +
+        `⚡ <b>Available Now:</b> ${data.availableAnytime ? "Yes" : "No"}\n` +
+        `📝 <b>Work Details:</b> ${data.details || "N/A"}`;
+
+      fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: telegramMessage }),
+      }).catch(err => console.error("Notification failed:", err));
+
       toast.success("Application submitted successfully! We will contact you soon.");
       e.currentTarget.reset();
       setShowForm(false);
