@@ -19,9 +19,10 @@ export default function RequestManpower() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget; // Capture the form element
     setIsSubmitting(true);
     
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const data = {
       companyName: formData.get("companyName") as string,
       clientName: formData.get("contactPerson") as string,
@@ -30,7 +31,7 @@ export default function RequestManpower() {
       workType: workType,
       workerCount: Number(formData.get("workersNeeded")),
       duration: formData.get("duration") as string,
-      accommodation: (e.currentTarget.elements.namedItem("accommodation") as HTMLInputElement)?.checked || false,
+      accommodation: (form.elements.namedItem("accommodation") as HTMLInputElement)?.checked || false,
       description: formData.get("details") as string,
       status: "pending",
       createdAt: serverTimestamp(),
@@ -51,14 +52,14 @@ export default function RequestManpower() {
         `🏠 <b>Accommodation:</b> ${data.accommodation ? "Yes" : "No"}\n` +
         `📝 <b>Details:</b> ${data.description || "N/A"}`;
 
-      fetch("/api/notify", {
+      fetch("/.netlify/functions/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: telegramMessage }),
       }).catch(err => console.error("Notification failed:", err));
 
       toast.success("Request submitted successfully! We will contact you soon.");
-      e.currentTarget.reset();
+      form.reset(); // Use the captured form element
       setShowForm(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, "manpowerRequests");

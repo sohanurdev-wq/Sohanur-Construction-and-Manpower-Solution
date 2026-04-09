@@ -19,9 +19,10 @@ export default function WorkWithUs() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget; // Capture the form element
     setIsSubmitting(true);
     
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const data = {
       name: formData.get("name") as string,
       phone: formData.get("phone") as string,
@@ -29,7 +30,7 @@ export default function WorkWithUs() {
       workType: workType,
       experience: formData.get("experience") as string,
       teamSize: formData.get("teamSize") as string,
-      availableAnytime: (e.currentTarget.elements.namedItem("available") as HTMLInputElement)?.checked || false,
+      availableAnytime: (form.elements.namedItem("available") as HTMLInputElement)?.checked || false,
       details: formData.get("details") as string,
       status: "pending",
       createdAt: serverTimestamp(),
@@ -49,14 +50,14 @@ export default function WorkWithUs() {
         `⚡ <b>Available Now:</b> ${data.availableAnytime ? "Yes" : "No"}\n` +
         `📝 <b>Work Details:</b> ${data.details || "N/A"}`;
 
-      fetch("/api/notify", {
+      fetch("/.netlify/functions/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: telegramMessage }),
       }).catch(err => console.error("Notification failed:", err));
 
       toast.success("Application submitted successfully! We will contact you soon.");
-      e.currentTarget.reset();
+      form.reset(); // Use the captured form element
       setShowForm(false);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, "workerApplications");

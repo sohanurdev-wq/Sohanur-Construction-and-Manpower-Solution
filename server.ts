@@ -15,8 +15,8 @@ async function startServer() {
 
   app.use(express.json());
 
-  // API Route for Telegram Notifications
-  app.post("/api/notify", async (req, res) => {
+  // API Route for Telegram Notifications (Supports both local and Netlify paths)
+  const notifyHandler = async (req: any, res: any) => {
     const { message } = req.body;
     const botToken = process.env.TELEGRAM_BOT_TOKEN || "8037861551:AAGCdukJlMoh0LeTuJ8nAasAu_BK4e8S9Vs";
     const chatId = process.env.TELEGRAM_CHAT_ID || "8329392163";
@@ -47,7 +47,10 @@ async function startServer() {
       console.error("Notification Error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
-  });
+  };
+
+  app.post("/api/notify", notifyHandler);
+  app.post("/.netlify/functions/notify", notifyHandler);
 
   // Initialize Firebase for server-side use
   const configPath = path.join(__dirname, "firebase-applet-config.json");
