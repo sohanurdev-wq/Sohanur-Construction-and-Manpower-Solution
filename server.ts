@@ -59,8 +59,8 @@ async function startServer() {
         // Hardcoded SEO metadata as requested
         const siteTitle = "Sohanur Construction & Manpower Solution";
         const siteDesc = "Need Construction Workers? অথবা কাজ খুঁজছেন? আমরা সরবরাহ করি দক্ষ Rod Mistry, Raj Mistry, Helper, Welder & Fitter। আজই যোগাযোগ করুন।";
-        const siteImage = "https://ais-dev-mb75bjrzfp5xjlpnzkjjg7-766197828128.asia-southeast1.run.app/logo.png";
-        const siteUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+        const siteImage = "https://scmsbd.netlify.app/logo.png";
+        const siteUrl = `https://scmsbd.netlify.app${req.originalUrl}`;
 
         const ogTags = `
           <title>${siteTitle}</title>
@@ -95,8 +95,8 @@ async function startServer() {
         // Hardcoded SEO metadata as requested
         const siteTitle = "Sohanur Construction & Manpower Solution";
         const siteDesc = "Need Construction Workers? অথবা কাজ খুঁজছেন? আমরা সরবরাহ করি দক্ষ Rod Mistry, Raj Mistry, Helper, Welder & Fitter। আজই যোগাযোগ করুন।";
-        const siteImage = "https://ais-dev-mb75bjrzfp5xjlpnzkjjg7-766197828128.asia-southeast1.run.app/logo.png";
-        const siteUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+        const siteImage = "https://scmsbd.netlify.app/logo.png";
+        const siteUrl = `https://scmsbd.netlify.app${req.originalUrl}`;
 
         const ogTags = `
           <title>${siteTitle}</title>
