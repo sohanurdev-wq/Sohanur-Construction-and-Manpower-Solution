@@ -54,7 +54,21 @@ export default function WorkWithUs() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: telegramMessage }),
-      }).catch(err => console.error("Notification failed:", err));
+      })
+      .then(res => {
+        if (!res.ok) throw new Error(`Status: ${res.status}`);
+        return res.json();
+      })
+      .then(data => console.log("Notification sent:", data))
+      .catch(err => {
+        console.error("Telegram Notification failed. Check Netlify Environment Variables and Functions.", err);
+        // Fallback for local/AI Studio dev
+        fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: telegramMessage }),
+        }).catch(e => console.error("API Fallback also failed:", e));
+      });
 
       toast.success("Application submitted successfully! We will contact you soon.");
       form.reset(); // Use the captured form element
