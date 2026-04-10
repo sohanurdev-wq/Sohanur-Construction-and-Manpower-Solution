@@ -11,6 +11,7 @@ import { HardHat, Info, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { db, handleFirestoreError, OperationType } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { sendTelegramNotification } from "@/lib/notifications";
 
 export default function WorkWithUs() {
   const [showForm, setShowForm] = useState(false);
@@ -39,7 +40,7 @@ export default function WorkWithUs() {
     try {
       await addDoc(collection(db, "workerApplications"), data);
       
-      // Send Telegram Notification
+      // Send Telegram Notification (Directly from client for GitHub Pages compatibility)
       const telegramMessage = `🟢 <b>New Worker Registration</b>\n\n` +
         `👤 <b>Name:</b> ${data.name}\n` +
         `📞 <b>Phone:</b> ${data.phone}\n` +
@@ -50,30 +51,7 @@ export default function WorkWithUs() {
         `⚡ <b>Available Now:</b> ${data.availableAnytime ? "Yes" : "No"}\n` +
         `📝 <b>Work Details:</b> ${data.details || "N/A"}`;
 
-      fetch("/.netlify/functions/notify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: telegramMessage }),
-      })
-      .then(async res => {
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`Server Error: ${res.status} - ${errorText}`);
-        }
-        return res.json();
-      })
-      .then(data => console.log("Telegram Notification sent successfully:", data))
-      .catch(err => {
-        console.error("Telegram Notification failed:", err);
-        toast.error("Admin notification failed, but your request was saved.");
-        
-        // Fallback for local/AI Studio dev
-        fetch("/api/notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: telegramMessage }),
-        }).catch(e => console.error("API Fallback also failed. Ensure you have deployed the 'netlify' folder and set Environment Variables in Netlify.", e));
-      });
+      sendTelegramNotification(telegramMessage).catch(err => console.error("Telegram Notification failed:", err));
 
       toast.success("Application submitted successfully! We will contact you soon.");
       form.reset(); // Use the captured form element

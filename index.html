@@ -9,6 +9,20 @@
     
     <!-- OG_TAGS_PLACEHOLDER -->
     
+    <!-- SPA Redirect for GitHub Pages -->
+    <script type="text/javascript">
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+
     <!-- Fallback tags for when server injection fails or local dev without server -->
     <title>Sohanur Construction & Manpower Solution</title>
     <meta name="description" content="Need Construction Workers? অথবা কাজ খুঁজছেন? আমরা সরবরাহ করি দক্ষ Rod Mistry, Raj Mistry, Helper, Welder & Fitter। আজই যোগাযোগ করুন।" />
