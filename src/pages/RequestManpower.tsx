@@ -57,19 +57,24 @@ export default function RequestManpower() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: telegramMessage }),
       })
-      .then(res => {
-        if (!res.ok) throw new Error(`Status: ${res.status}`);
+      .then(async res => {
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Server Error: ${res.status} - ${errorText}`);
+        }
         return res.json();
       })
-      .then(data => console.log("Notification sent:", data))
+      .then(data => console.log("Telegram Notification sent successfully:", data))
       .catch(err => {
-        console.error("Telegram Notification failed. Check Netlify Environment Variables and Functions.", err);
+        console.error("Telegram Notification failed:", err);
+        toast.error("Admin notification failed, but your request was saved.");
+        
         // Fallback for local/AI Studio dev
         fetch("/api/notify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: telegramMessage }),
-        }).catch(e => console.error("API Fallback also failed:", e));
+        }).catch(e => console.error("API Fallback also failed. Ensure you have deployed the 'netlify' folder and set Environment Variables in Netlify.", e));
       });
 
       toast.success("Request submitted successfully! We will contact you soon.");

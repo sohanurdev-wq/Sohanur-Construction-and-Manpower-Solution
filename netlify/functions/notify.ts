@@ -24,18 +24,19 @@ const handler: Handler = async (event) => {
       }),
     });
 
-    const data = await response.json();
-    if (data.ok) {
+    if (!response.ok) {
+      const errorData = await response.text();
       return {
-        statusCode: 200,
-        body: JSON.stringify({ success: true }),
-      };
-    } else {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Failed to send Telegram notification", details: data }),
+        statusCode: response.status,
+        body: JSON.stringify({ error: "Telegram API Error", details: errorData }),
       };
     }
+
+    const data = await response.json();
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ success: true, data }),
+    };
   } catch (error) {
     return {
       statusCode: 500,

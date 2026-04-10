@@ -4,6 +4,12 @@
 
 [functions]
   directory = "netlify/functions"
+  node_bundle = true
+
+[[redirects]]
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 [[redirects]]
   from = "/*"
